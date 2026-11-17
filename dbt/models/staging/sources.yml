@@ -1,0 +1,16 @@
+version: 2
+sources:
+  - name: raw
+    schema: raw
+    description: Tables loaded by dlt from the CMS data API.
+    tables:
+      - name: cms_provider_year
+        description: >
+          CMS "Medicare Physician & Other Practitioners - by Provider".
+          One row per provider (NPI) per data year, with the practice location
+          CMS published for that year and Medicare billing totals.
+        columns:
+          - name: npi
+            tests: [not_null]
+          - name: data_year
+            tests: [not_null]

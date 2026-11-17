@@ -1,0 +1,21 @@
+# One image serves both the Go API and the built React app.
+FROM node:22-alpine AS web
+WORKDIR /web
+COPY web/package.json web/package-lock.json ./
+RUN npm ci
+COPY web/ ./
+RUN npm run build
+
+FROM golang:1.27-alpine AS api
+WORKDIR /src
+COPY api/go.mod api/go.sum ./
+RUN go mod download
+COPY api/ ./
+RUN CGO_ENABLED=0 go build -o /out/directory-truth-api .
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=api /out/directory-truth-api /directory-truth-api
+COPY --from=web /web/dist /static
+ENV STATIC_DIR=/static PORT=8080
+EXPOSE 8080
+ENTRYPOINT ["/directory-truth-api"]

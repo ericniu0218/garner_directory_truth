@@ -1,0 +1,15 @@
+data/
+artifacts/*.joblib
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+.env
+.dlt/
+*.log
+api/directory-truth-api
+.terraform/

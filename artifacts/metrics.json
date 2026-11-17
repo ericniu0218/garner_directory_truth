@@ -1,0 +1,987 @@
+{
+  "states": [
+    "NY"
+  ],
+  "train_years": [
+    2019,
+    2020,
+    2021
+  ],
+  "test_years": [
+    2022,
+    2023
+  ],
+  "labels": {
+    "stale": "address changed, or provider absent from next year's CMS file",
+    "moved": "provider present next year at a different address"
+  },
+  "targets": {
+    "stale": {
+      "train_rows": 244087,
+      "models": {
+        "logistic_regression": {
+          "rows": 171307,
+          "positives": 20618,
+          "base_rate": 0.12035701985324593,
+          "roc_auc": 0.7224494400683474,
+          "average_precision": 0.29607402797674137,
+          "brier": 0.09621066072224917,
+          "capture": [
+            {
+              "review_fraction": 0.01,
+              "reviewed": 1713,
+              "precision": 0.514302393461763,
+              "recall": 0.04272965370064992,
+              "lift": 4.2731399804420525
+            },
+            {
+              "review_fraction": 0.05,
+              "reviewed": 8565,
+              "precision": 0.4215995329830706,
+              "recall": 0.17513822873217577,
+              "lift": 3.5029077115496596
+            },
+            {
+              "review_fraction": 0.1,
+              "reviewed": 17131,
+              "precision": 0.3717237756114646,
+              "recall": 0.3088563391211563,
+              "lift": 3.088509303941855
+            },
+            {
+              "review_fraction": 0.2,
+              "reviewed": 34261,
+              "precision": 0.29260675403520037,
+              "recall": 0.48622562809195846,
+              "lift": 2.4311565240812913
+            },
+            {
+              "review_fraction": 0.3,
+              "reviewed": 51392,
+              "precision": 0.24213885429638854,
+              "recall": 0.6035502958579881,
+              "lift": 2.011838234210468
+            },
+            {
+              "review_fraction": 0.5,
+              "reviewed": 85654,
+              "precision": 0.18333060919513391,
+              "recall": 0.7616160636337181,
+              "lift": 1.5232232354928124
+            }
+          ],
+          "patient_weighted_capture": [
+            {
+              "review_fraction": 0.01,
+              "share_of_affected_patients": 0.1076206520661976,
+              "volume_only_baseline": 0.2242137532064768,
+              "random_baseline": 0.01
+            },
+            {
+              "review_fraction": 0.05,
+              "share_of_affected_patients": 0.2908210692534006,
+              "volume_only_baseline": 0.3408448690685256,
+              "random_baseline": 0.05
+            },
+            {
+              "review_fraction": 0.1,
+              "share_of_affected_patients": 0.41946548701894726,
+              "volume_only_baseline": 0.42447075871861145,
+              "random_baseline": 0.1
+            },
+            {
+              "review_fraction": 0.2,
+              "share_of_affected_patients": 0.5463898198524574,
+              "volume_only_baseline": 0.5530190024872025,
+              "random_baseline": 0.2
+            },
+            {
+              "review_fraction": 0.3,
+              "share_of_affected_patients": 0.6474426976806146,
+              "volume_only_baseline": 0.6515453634223647,
+              "random_baseline": 0.3
+            },
+            {
+              "review_fraction": 0.5,
+              "share_of_affected_patients": 0.7901606853047107,
+              "volume_only_baseline": 0.7992452290711899,
+              "random_baseline": 0.5
+            }
+          ],
+          "calibration": [
+            {
+              "predicted": 0.022423382896984333,
+              "observed": 0.04453913957153698,
+              "n": 17131
+            },
+            {
+              "predicted": 0.03810339688748518,
+              "observed": 0.050493257836670365,
+              "n": 17131
+            },
+            {
+              "predicted": 0.05046081120923831,
+              "observed": 0.056567425569176884,
+              "n": 17130
+            },
+            {
+              "predicted": 0.0634668889883227,
+              "observed": 0.06356896853657112,
+              "n": 17131
+            },
+            {
+              "predicted": 0.07873817580884537,
+              "observed": 0.0717412877240091,
+              "n": 17131
+            },
+            {
+              "predicted": 0.09828777214873353,
+              "observed": 0.08622300058377116,
+              "n": 17130
+            },
+            {
+              "predicted": 0.12526377744603204,
+              "observed": 0.10402194851438912,
+              "n": 17131
+            },
+            {
+              "predicted": 0.16474265482118566,
+              "observed": 0.14121424401634558,
+              "n": 17130
+            },
+            {
+              "predicted": 0.22895964246587708,
+              "observed": 0.21347265191757633,
+              "n": 17131
+            },
+            {
+              "predicted": 0.36187624394665,
+              "observed": 0.3717237756114646,
+              "n": 17131
+            }
+          ],
+          "patients_50_plus": {
+            "rows": 127551,
+            "base_rate": 0.07749841239974599,
+            "roc_auc": 0.6295340099207103,
+            "capture": [
+              {
+                "review_fraction": 0.01,
+                "reviewed": 1276,
+                "precision": 0.28761755485893414,
+                "recall": 0.037126960040465354,
+                "lift": 3.7112702822267987
+              },
+              {
+                "review_fraction": 0.05,
+                "reviewed": 6378,
+                "precision": 0.20774537472561933,
+                "recall": 0.1340414769853313,
+                "lift": 2.680640393690184
+              },
+              {
+                "review_fraction": 0.1,
+                "reviewed": 12755,
+                "precision": 0.17632301058408467,
+                "recall": 0.22751643904906424,
+                "lift": 2.275182227922163
+              },
+              {
+                "review_fraction": 0.2,
+                "reviewed": 25510,
+                "precision": 0.13986671893375147,
+                "recall": 0.3609509357612544,
+                "lift": 1.804768828196149
+              },
+              {
+                "review_fraction": 0.3,
+                "reviewed": 38265,
+                "precision": 0.1226185809486476,
+                "recall": 0.4746585735963581,
+                "lift": 1.582207649831153
+              },
+              {
+                "review_fraction": 0.5,
+                "reviewed": 63776,
+                "precision": 0.10220145509282488,
+                "recall": 0.6593829033889732,
+                "lift": 1.318755467733425
+              }
+            ]
+          }
+        },
+        "gradient_boosting": {
+          "rows": 171307,
+          "positives": 20618,
+          "base_rate": 0.12035701985324593,
+          "roc_auc": 0.7566297809823331,
+          "average_precision": 0.34969803695809226,
+          "brier": 0.09230915770257858,
+          "capture": [
+            {
+              "review_fraction": 0.01,
+              "reviewed": 1713,
+              "precision": 0.6339754816112084,
+              "recall": 0.0526724221553982,
+              "lift": 5.26745745602732
+            },
+            {
+              "review_fraction": 0.05,
+              "reviewed": 8565,
+              "precision": 0.4897840046701693,
+              "recall": 0.20346299350082453,
+              "lift": 4.069426156175802
+            },
+            {
+              "review_fraction": 0.1,
+              "reviewed": 17131,
+              "precision": 0.4129356137995447,
+              "recall": 0.34309826365311863,
+              "lift": 3.430922552777117
+            },
+            {
+              "review_fraction": 0.2,
+              "reviewed": 34261,
+              "precision": 0.3165114853623654,
+              "recall": 0.5259482006014162,
+              "lift": 2.6297717054501275
+            },
+            {
+              "review_fraction": 0.3,
+              "reviewed": 51392,
+              "precision": 0.2586394769613948,
+              "recall": 0.6446794063439713,
+              "lift": 2.1489355359310145
+            },
+            {
+              "review_fraction": 0.5,
+              "reviewed": 85654,
+              "precision": 0.19261213720316622,
+              "recall": 0.8001746047143273,
+              "lift": 1.6003398674877678
+            }
+          ],
+          "patient_weighted_capture": [
+            {
+              "review_fraction": 0.01,
+              "share_of_affected_patients": 0.23091539125109048,
+              "volume_only_baseline": 0.2242137532064768,
+              "random_baseline": 0.01
+            },
+            {
+              "review_fraction": 0.05,
+              "share_of_affected_patients": 0.3675698682968592,
+              "volume_only_baseline": 0.3408448690685256,
+              "random_baseline": 0.05
+            },
+            {
+              "review_fraction": 0.1,
+              "share_of_affected_patients": 0.4645636186116179,
+              "volume_only_baseline": 0.42447075871861145,
+              "random_baseline": 0.1
+            },
+            {
+              "review_fraction": 0.2,
+              "share_of_affected_patients": 0.6026600557874164,
+              "volume_only_baseline": 0.5530190024872025,
+              "random_baseline": 0.2
+            },
+            {
+              "review_fraction": 0.3,
+              "share_of_affected_patients": 0.7033090678107906,
+              "volume_only_baseline": 0.6515453634223647,
+              "random_baseline": 0.3
+            },
+            {
+              "review_fraction": 0.5,
+              "share_of_affected_patients": 0.8386856653632274,
+              "volume_only_baseline": 0.7992452290711899,
+              "random_baseline": 0.5
+            }
+          ],
+          "calibration": [
+            {
+              "predicted": 0.02901316455124597,
+              "observed": 0.03158017628859962,
+              "n": 17131
+            },
+            {
+              "predicted": 0.0380136133172852,
+              "observed": 0.04097834335415329,
+              "n": 17131
+            },
+            {
+              "predicted": 0.04488367430877122,
+              "observed": 0.047285464098073555,
+              "n": 17130
+            },
+            {
+              "predicted": 0.052700073466510025,
+              "observed": 0.053295195843791957,
+              "n": 17131
+            },
+            {
+              "predicted": 0.06345255723291153,
+              "observed": 0.06736325958788161,
+              "n": 17131
+            },
+            {
+              "predicted": 0.08049195950298632,
+              "observed": 0.08277875072971395,
+              "n": 17130
+            },
+            {
+              "predicted": 0.10566147750666247,
+              "observed": 0.10437219076527932,
+              "n": 17131
+            },
+            {
+              "predicted": 0.1452625612748108,
+              "observed": 0.14290718038528896,
+              "n": 17130
+            },
+            {
+              "predicted": 0.2297482407801504,
+              "observed": 0.2200688809760084,
+              "n": 17131
+            },
+            {
+              "predicted": 0.44400363688933625,
+              "observed": 0.4129356137995447,
+              "n": 17131
+            }
+          ],
+          "patients_50_plus": {
+            "rows": 127551,
+            "base_rate": 0.07749841239974599,
+            "roc_auc": 0.6832714906344691,
+            "capture": [
+              {
+                "review_fraction": 0.01,
+                "reviewed": 1276,
+                "precision": 0.4216300940438871,
+                "recall": 0.05442589782498736,
+                "lift": 5.440499759776616
+              },
+              {
+                "review_fraction": 0.05,
+                "reviewed": 6378,
+                "precision": 0.2740671056757604,
+                "recall": 0.17683358624178047,
+                "lift": 3.536422194845616
+              },
+              {
+                "review_fraction": 0.1,
+                "reviewed": 12755,
+                "precision": 0.21607212857702862,
+                "recall": 0.2788062721294891,
+                "lift": 2.788084579881495
+              },
+              {
+                "review_fraction": 0.2,
+                "reviewed": 25510,
+                "precision": 0.16769894159153273,
+                "recall": 0.43277693474962065,
+                "lift": 2.1639016387396652
+              },
+              {
+                "review_fraction": 0.3,
+                "reviewed": 38265,
+                "precision": 0.14091206062981837,
+                "recall": 0.5454729387961558,
+                "lift": 1.8182573844606942
+              },
+              {
+                "review_fraction": 0.5,
+                "reviewed": 63776,
+                "precision": 0.11255017561465128,
+                "recall": 0.7261507334344968,
+                "lift": 1.452290080912937
+              }
+            ]
+          }
+        },
+        "baseline_moved_recently": {
+          "roc_auc": 0.5358260657366399,
+          "average_precision": 0.12989509095162613,
+          "capture": [
+            {
+              "review_fraction": 0.01,
+              "reviewed": 1713,
+              "precision": 0.15703444249854057,
+              "recall": 0.013046852265011155,
+              "lift": 1.3047385411338388
+            },
+            {
+              "review_fraction": 0.05,
+              "reviewed": 8565,
+              "precision": 0.14244016345592528,
+              "recall": 0.05917159763313609,
+              "lift": 1.1834803124039281
+            },
+            {
+              "review_fraction": 0.1,
+              "reviewed": 17131,
+              "precision": 0.17080147101745374,
+              "recall": 0.1419148317004559,
+              "lift": 1.4191234647195143
+            },
+            {
+              "review_fraction": 0.2,
+              "reviewed": 34261,
+              "precision": 0.15656285572516856,
+              "recall": 0.26016102434765737,
+              "lift": 1.3008203087453416
+            },
+            {
+              "review_fraction": 0.3,
+              "reviewed": 51392,
+              "precision": 0.14239570361145704,
+              "recall": 0.35493258317974585,
+              "lift": 1.1831109127251853
+            },
+            {
+              "review_fraction": 0.5,
+              "reviewed": 85654,
+              "precision": 0.12925257431059844,
+              "recall": 0.5369579978659423,
+              "lift": 1.0739097268127697
+            }
+          ]
+        },
+        "baseline_fewest_patients": {
+          "roc_auc": 0.7074397291302235,
+          "average_precision": 0.2808245809723392,
+          "capture": [
+            {
+              "review_fraction": 0.01,
+              "reviewed": 1713,
+              "precision": 0.524810274372446,
+              "recall": 0.04360267727228635,
+              "lift": 4.3604459051275875
+            },
+            {
+              "review_fraction": 0.05,
+              "reviewed": 8565,
+              "precision": 0.4267367192060712,
+              "recall": 0.1772722863517315,
+              "lift": 3.545590608062588
+            },
+            {
+              "review_fraction": 0.1,
+              "reviewed": 17131,
+              "precision": 0.35409491564999124,
+              "recall": 0.2942089436414783,
+              "lift": 2.9420379142134565
+            },
+            {
+              "review_fraction": 0.2,
+              "reviewed": 34261,
+              "precision": 0.2720294212077873,
+              "recall": 0.4520322048695315,
+              "lift": 2.2601874119139787
+            },
+            {
+              "review_fraction": 0.3,
+              "reviewed": 51392,
+              "precision": 0.2281678082191781,
+              "recall": 0.5687263556116016,
+              "lift": 1.8957582075178359
+            },
+            {
+              "review_fraction": 0.5,
+              "reviewed": 85654,
+              "precision": 0.17889415555607444,
+              "recall": 0.7431855660102823,
+              "lift": 1.4863624554197519
+            }
+          ]
+        }
+      }
+    },
+    "moved": {
+      "train_rows": 220254,
+      "models": {
+        "logistic_regression": {
+          "rows": 154612,
+          "positives": 3923,
+          "base_rate": 0.025373192248984554,
+          "roc_auc": 0.5888673460338851,
+          "average_precision": 0.036607418492615625,
+          "brier": 0.024660012854658755,
+          "capture": [
+            {
+              "review_fraction": 0.01,
+              "reviewed": 1546,
+              "precision": 0.056921086675291076,
+              "recall": 0.022431812388478207,
+              "lift": 2.243355353821082
+            },
+            {
+              "review_fraction": 0.05,
+              "reviewed": 7731,
+              "precision": 0.04992885784503945,
+              "recall": 0.09839408615855214,
+              "lift": 1.9677799054645015
+            },
+            {
+              "review_fraction": 0.1,
+              "reviewed": 15461,
+              "precision": 0.045275208589353855,
+              "recall": 0.17843487127198573,
+              "lift": 1.7843717946513327
+            },
+            {
+              "review_fraction": 0.2,
+              "reviewed": 30922,
+              "precision": 0.040100899036284846,
+              "recall": 0.3160846291103747,
+              "lift": 1.5804435895483233
+            },
+            {
+              "review_fraction": 0.3,
+              "reviewed": 46384,
+              "precision": 0.035766643670231114,
+              "recall": 0.42289064491460615,
+              "lift": 1.4096233268268603
+            },
+            {
+              "review_fraction": 0.5,
+              "reviewed": 77306,
+              "precision": 0.031006648901767003,
+              "recall": 0.6110119806270711,
+              "lift": 1.2220239612541421
+            }
+          ],
+          "patient_weighted_capture": [
+            {
+              "review_fraction": 0.01,
+              "share_of_affected_patients": 0.1338206261376706,
+              "volume_only_baseline": 0.13374704545248725,
+              "random_baseline": 0.01
+            },
+            {
+              "review_fraction": 0.05,
+              "share_of_affected_patients": 0.2798884743214729,
+              "volume_only_baseline": 0.27554494987457323,
+              "random_baseline": 0.05
+            },
+            {
+              "review_fraction": 0.1,
+              "share_of_affected_patients": 0.41881786403194987,
+              "volume_only_baseline": 0.38708081649656323,
+              "random_baseline": 0.1
+            },
+            {
+              "review_fraction": 0.2,
+              "share_of_affected_patients": 0.5823764070891028,
+              "volume_only_baseline": 0.5520011682348787,
+              "random_baseline": 0.2
+            },
+            {
+              "review_fraction": 0.3,
+              "share_of_affected_patients": 0.7023265080644431,
+              "volume_only_baseline": 0.6702340092190938,
+              "random_baseline": 0.3
+            },
+            {
+              "review_fraction": 0.5,
+              "share_of_affected_patients": 0.849716544560463,
+              "volume_only_baseline": 0.8429935339557882,
+              "random_baseline": 0.5
+            }
+          ],
+          "calibration": [
+            {
+              "predicted": 0.010878292872278412,
+              "observed": 0.015004527228042944,
+              "n": 15462
+            },
+            {
+              "predicted": 0.01647500924506502,
+              "observed": 0.01849815665222172,
+              "n": 15461
+            },
+            {
+              "predicted": 0.019588441998864885,
+              "observed": 0.021279348036996312,
+              "n": 15461
+            },
+            {
+              "predicted": 0.02181642416689418,
+              "observed": 0.021990815600543303,
+              "n": 15461
+            },
+            {
+              "predicted": 0.023831264267708152,
+              "observed": 0.02192613673112994,
+              "n": 15461
+            },
+            {
+              "predicted": 0.025803729975230873,
+              "observed": 0.021085311428756224,
+              "n": 15461
+            },
+            {
+              "predicted": 0.027957206869007826,
+              "observed": 0.026647694198305413,
+              "n": 15461
+            },
+            {
+              "predicted": 0.030545537278922584,
+              "observed": 0.027100446284198953,
+              "n": 15461
+            },
+            {
+              "predicted": 0.034667388705756884,
+              "observed": 0.03486191061380247,
+              "n": 15461
+            },
+            {
+              "predicted": 0.04689246118222471,
+              "observed": 0.045336955115767685,
+              "n": 15462
+            }
+          ],
+          "patients_50_plus": {
+            "rows": 120611,
+            "base_rate": 0.024417341701834825,
+            "roc_auc": 0.5859470002239656,
+            "capture": [
+              {
+                "review_fraction": 0.01,
+                "reviewed": 1206,
+                "precision": 0.06218905472636816,
+                "recall": 0.025466893039049237,
+                "lift": 2.546921588998978
+              },
+              {
+                "review_fraction": 0.05,
+                "reviewed": 6031,
+                "precision": 0.049079754601226995,
+                "recall": 0.10050933786078098,
+                "lift": 2.010036768152322
+              },
+              {
+                "review_fraction": 0.1,
+                "reviewed": 12061,
+                "precision": 0.04361164082580217,
+                "recall": 0.17860780984719865,
+                "lift": 1.7860929071785485
+              },
+              {
+                "review_fraction": 0.2,
+                "reviewed": 24122,
+                "precision": 0.0387198408092198,
+                "recall": 0.3171477079796265,
+                "lift": 1.5857516875520574
+              },
+              {
+                "review_fraction": 0.3,
+                "reviewed": 36183,
+                "precision": 0.034214962827847334,
+                "recall": 0.4203735144312394,
+                "lift": 1.4012566660881136
+              },
+              {
+                "review_fraction": 0.5,
+                "reviewed": 60306,
+                "precision": 0.029350313401651576,
+                "recall": 0.601018675721562,
+                "lift": 1.2020273852925631
+              }
+            ]
+          }
+        },
+        "gradient_boosting": {
+          "rows": 154612,
+          "positives": 3923,
+          "base_rate": 0.025373192248984554,
+          "roc_auc": 0.6035341451152403,
+          "average_precision": 0.036207362181757394,
+          "brier": 0.024658840880552545,
+          "capture": [
+            {
+              "review_fraction": 0.01,
+              "reviewed": 1546,
+              "precision": 0.03945666235446313,
+              "recall": 0.015549324496558756,
+              "lift": 1.5550531429896135
+            },
+            {
+              "review_fraction": 0.05,
+              "reviewed": 7731,
+              "precision": 0.04760056913723969,
+              "recall": 0.0938057608972725,
+              "lift": 1.8760181482148617
+            },
+            {
+              "review_fraction": 0.1,
+              "reviewed": 15461,
+              "precision": 0.04436970441756678,
+              "recall": 0.174866173846546,
+              "lift": 1.7486843587583063
+            },
+            {
+              "review_fraction": 0.2,
+              "reviewed": 30922,
+              "precision": 0.041038742642778604,
+              "recall": 0.3234769309202141,
+              "lift": 1.6174055767232438
+            },
+            {
+              "review_fraction": 0.3,
+              "reviewed": 46384,
+              "precision": 0.03785788202828561,
+              "recall": 0.4476166199337242,
+              "lift": 1.49204253279564
+            },
+            {
+              "review_fraction": 0.5,
+              "reviewed": 77306,
+              "precision": 0.032662406540242675,
+              "recall": 0.6436400713739485,
+              "lift": 1.2872801427478973
+            }
+          ],
+          "patient_weighted_capture": [
+            {
+              "review_fraction": 0.01,
+              "share_of_affected_patients": 0.13460510944277912,
+              "volume_only_baseline": 0.13374704545248725,
+              "random_baseline": 0.01
+            },
+            {
+              "review_fraction": 0.05,
+              "share_of_affected_patients": 0.28202797424449616,
+              "volume_only_baseline": 0.27554494987457323,
+              "random_baseline": 0.05
+            },
+            {
+              "review_fraction": 0.1,
+              "share_of_affected_patients": 0.41305140233465854,
+              "volume_only_baseline": 0.38708081649656323,
+              "random_baseline": 0.1
+            },
+            {
+              "review_fraction": 0.2,
+              "share_of_affected_patients": 0.5818183258922507,
+              "volume_only_baseline": 0.5520011682348787,
+              "random_baseline": 0.2
+            },
+            {
+              "review_fraction": 0.3,
+              "share_of_affected_patients": 0.700440578502667,
+              "volume_only_baseline": 0.6702340092190938,
+              "random_baseline": 0.3
+            },
+            {
+              "review_fraction": 0.5,
+              "share_of_affected_patients": 0.8523790333535586,
+              "volume_only_baseline": 0.8429935339557882,
+              "random_baseline": 0.5
+            }
+          ],
+          "calibration": [
+            {
+              "predicted": 0.012767962368348396,
+              "observed": 0.012740913206570947,
+              "n": 15462
+            },
+            {
+              "predicted": 0.018019701547901217,
+              "observed": 0.017204579263954467,
+              "n": 15461
+            },
+            {
+              "predicted": 0.020050477330547878,
+              "observed": 0.019921091779315697,
+              "n": 15461
+            },
+            {
+              "predicted": 0.021614212860290753,
+              "observed": 0.01998577064872906,
+              "n": 15461
+            },
+            {
+              "predicted": 0.023019664527356824,
+              "observed": 0.020567880473449325,
+              "n": 15461
+            },
+            {
+              "predicted": 0.02455027523243025,
+              "observed": 0.024189897160597634,
+              "n": 15461
+            },
+            {
+              "predicted": 0.026473020603717878,
+              "observed": 0.02554815341827825,
+              "n": 15461
+            },
+            {
+              "predicted": 0.029294059630879256,
+              "observed": 0.03149860940430761,
+              "n": 15461
+            },
+            {
+              "predicted": 0.03353335951134163,
+              "observed": 0.037707780867990426,
+              "n": 15461
+            },
+            {
+              "predicted": 0.04515042831931654,
+              "observed": 0.04436683482085112,
+              "n": 15462
+            }
+          ],
+          "patients_50_plus": {
+            "rows": 120611,
+            "base_rate": 0.024417341701834825,
+            "roc_auc": 0.6013763584572221,
+            "capture": [
+              {
+                "review_fraction": 0.01,
+                "reviewed": 1206,
+                "precision": 0.03897180762852405,
+                "recall": 0.01595925297113752,
+                "lift": 1.5960708624393596
+              },
+              {
+                "review_fraction": 0.05,
+                "reviewed": 6031,
+                "precision": 0.04427126513016084,
+                "recall": 0.09066213921901528,
+                "lift": 1.8131074901914528
+              },
+              {
+                "review_fraction": 0.1,
+                "reviewed": 12061,
+                "precision": 0.0412071967498549,
+                "recall": 0.16876061120543293,
+                "lift": 1.6876201043112902
+              },
+              {
+                "review_fraction": 0.2,
+                "reviewed": 24122,
+                "precision": 0.0391758560650029,
+                "recall": 0.32088285229202035,
+                "lift": 1.6044275639579166
+              },
+              {
+                "review_fraction": 0.3,
+                "reviewed": 36183,
+                "precision": 0.03634303402150181,
+                "recall": 0.4465195246179966,
+                "lift": 1.4884107559821238
+              },
+              {
+                "review_fraction": 0.5,
+                "reviewed": 60306,
+                "precision": 0.031074851590223194,
+                "recall": 0.6363327674023769,
+                "lift": 1.272654983072465
+              }
+            ]
+          }
+        },
+        "baseline_moved_recently": {
+          "roc_auc": 0.5361237774561919,
+          "average_precision": 0.02799328412863924,
+          "capture": [
+            {
+              "review_fraction": 0.01,
+              "reviewed": 1546,
+              "precision": 0.03557567917205692,
+              "recall": 0.014019882742798879,
+              "lift": 1.4020970961381762
+            },
+            {
+              "review_fraction": 0.05,
+              "reviewed": 7731,
+              "precision": 0.03570042685292976,
+              "recall": 0.07035432067295437,
+              "lift": 1.4070136111611462
+            },
+            {
+              "review_fraction": 0.1,
+              "reviewed": 15461,
+              "precision": 0.037384386520923615,
+              "recall": 0.14733622227886822,
+              "lift": 1.4733812818692436
+            },
+            {
+              "review_fraction": 0.2,
+              "reviewed": 30922,
+              "precision": 0.033083241704935,
+              "recall": 0.2607698190160591,
+              "lift": 1.3038659613773669
+            },
+            {
+              "review_fraction": 0.3,
+              "reviewed": 46384,
+              "precision": 0.030829596412556053,
+              "recall": 0.36451695131277084,
+              "lift": 1.2150460261376794
+            },
+            {
+              "review_fraction": 0.5,
+              "reviewed": 77306,
+              "precision": 0.027358807854500296,
+              "recall": 0.5391282182003568,
+              "lift": 1.0782564364007137
+            }
+          ]
+        },
+        "baseline_fewest_patients": {
+          "roc_auc": 0.5458351364693442,
+          "average_precision": 0.028424439544240905,
+          "capture": [
+            {
+              "review_fraction": 0.01,
+              "reviewed": 1546,
+              "precision": 0.03492884864165589,
+              "recall": 0.013764975783838899,
+              "lift": 1.3766044216629365
+            },
+            {
+              "review_fraction": 0.05,
+              "reviewed": 7731,
+              "precision": 0.02871556072953046,
+              "recall": 0.056589344889115475,
+              "lift": 1.1317283394122264
+            },
+            {
+              "review_fraction": 0.1,
+              "reviewed": 15461,
+              "precision": 0.02949356445249337,
+              "recall": 0.1162375732857507,
+              "lift": 1.162390769087154
+            },
+            {
+              "review_fraction": 0.2,
+              "reviewed": 30922,
+              "precision": 0.028620399715412973,
+              "recall": 0.22559265867958195,
+              "lift": 1.127977884476021
+            },
+            {
+              "review_fraction": 0.3,
+              "reviewed": 46384,
+              "precision": 0.028371852362883754,
+              "recall": 0.33545755799133314,
+              "lift": 1.1181822170609694
+            },
+            {
+              "review_fraction": 0.5,
+              "reviewed": 77306,
+              "precision": 0.028639432903008823,
+              "recall": 0.5643640071373949,
+              "lift": 1.1287280142747897
+            }
+          ]
+        }
+      }
+    }
+  },
+  "served_model": "gradient_boosting"
+}

@@ -1,0 +1,55 @@
+# Local stack: Postgres, MinIO (stands in for S3), the API + web app, and Airflow.
+# Not yet run end to end: Docker was not available on the machine this was written on.
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: dt
+      POSTGRES_PASSWORD: dt
+      POSTGRES_DB: directory_truth
+    ports: ["5433:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dt -d directory_truth"]
+      interval: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio12345
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["miniodata:/data"]
+
+  api:
+    build: { context: ., dockerfile: Dockerfile.api }
+    environment:
+      DATABASE_URL: postgresql://dt:dt@postgres:5432/directory_truth
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports: ["8080:8080"]
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  airflow:
+    build: { context: ., dockerfile: airflow/Dockerfile }
+    command: airflow standalone
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      DT_PROJECT_DIR: /opt/directory-truth
+      DATABASE_URL: postgresql://dt:dt@postgres:5432/directory_truth
+      DT_PG_HOST: postgres
+      DT_PG_PORT: "5432"
+      RAW_URL: s3://directory-truth-raw
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio12345
+      AWS_ENDPOINT_URL: http://minio:9000
+    ports: ["8081:8080"]
+    volumes: ["./airflow/dags:/opt/airflow/dags"]
+    depends_on:
+      postgres: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  miniodata:

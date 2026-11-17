@@ -1,0 +1,35 @@
+version: 2
+models:
+  - name: provider_features
+    description: >
+      One row per provider (NPI) per data year. Feature columns use only data
+      from that year or earlier. Label columns describe the following year.
+    columns:
+      - name: npi
+        tests: [not_null]
+      - name: data_year
+        tests: [not_null]
+      - name: address_key
+        tests: [not_null]
+      - name: tenure_years
+        description: Years seen at the current address, up to and including this year.
+        tests: [not_null]
+      - name: moves_prior
+        description: Address changes seen in this year or earlier.
+        tests: [not_null]
+      - name: entity_code
+        tests:
+          - accepted_values:
+              values: ["I", "O"]
+      - name: moved_next_year
+        description: >
+          True if the provider's address in next year's file differs from this
+          year's. A proxy for "the directory listing went stale". Null for the
+          latest year and for providers absent from next year's file.
+      - name: gone_next_year
+        description: True if the provider is absent from next year's file.
+  - name: provider_current
+    description: Latest-year row per provider; the listings that get scored and served.
+    columns:
+      - name: npi
+        tests: [not_null, unique]

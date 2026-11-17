@@ -1,0 +1,12 @@
+directory_truth:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DT_PG_HOST', 'localhost') }}"
+      port: "{{ env_var('DT_PG_PORT', '5433') | int }}"
+      user: "{{ env_var('DT_PG_USER', 'dt') }}"
+      password: "{{ env_var('DT_PG_PASSWORD', 'dt') }}"
+      dbname: "{{ env_var('DT_PG_DB', 'directory_truth') }}"
+      schema: public
+      threads: 4

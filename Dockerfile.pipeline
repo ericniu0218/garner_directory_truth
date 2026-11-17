@@ -1,0 +1,11 @@
+# Runs ingestion, dbt and the model. Used by the Kubernetes CronJob and by Airflow.
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+WORKDIR /opt/directory-truth
+COPY pipeline/pyproject.toml pipeline/uv.lock pipeline/
+RUN cd pipeline && uv sync --frozen --no-dev --no-install-project
+COPY pipeline/ pipeline/
+RUN cd pipeline && uv sync --frozen --no-dev
+COPY dbt/ dbt/
+COPY api/schema.sql api/schema.sql
+ENV PATH="/opt/directory-truth/pipeline/.venv/bin:$PATH"
+CMD ["sh", "-c", "cd pipeline && python -m directory_truth.ingest all && cd ../dbt && dbt build --profiles-dir . && cd ../pipeline && python -m directory_truth.model all"]
