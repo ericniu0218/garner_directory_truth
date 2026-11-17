@@ -81,6 +81,14 @@ def fetch_pages(year: int, state: str, session: requests.Session) -> Iterator[li
         offset += config.PAGE_SIZE
 
 
+def expected_rows(year: int, state: str, session: requests.Session) -> int:
+    """Row count the API itself reports for this year and state."""
+    url = config.CMS_API.format(dataset_id=config.CMS_DATASET_IDS[year]) + "/stats"
+    resp = session.get(url, params={"filter[Rndrng_Prvdr_State_Abrvtn]": state}, timeout=120)
+    resp.raise_for_status()
+    return int(resp.json()["found_rows"])
+
+
 def land(years: list[int], states: list[str], force: bool = False) -> None:
     session = requests.Session()
     for year in years:
@@ -92,6 +100,7 @@ def land(years: list[int], states: list[str], force: bool = False) -> None:
                 continue
             fs.makedirs(fs_path.rsplit("/", 1)[0], exist_ok=True)
             n = 0
+            seen: set[str] = set()
             # Write to a temp name, then rename, so a crash never leaves a
             # half-written file that a later run would mistake for complete.
             tmp = fs_path + ".tmp"
@@ -99,7 +108,17 @@ def land(years: list[int], states: list[str], force: bool = False) -> None:
                 for page in fetch_pages(year, state, session):
                     for row in page:
                         out.write(json.dumps(row) + "\n")
+                        seen.add(row["Rndrng_NPI"])
                     n += len(page)
+            # Paging by offset can silently drop or repeat rows if the server's
+            # order shifts mid-download. Refuse to keep a file that does not
+            # match the API's own count, or that repeats a provider.
+            expected = expected_rows(year, state, session)
+            if n != expected or len(seen) != n:
+                fs.rm(tmp)
+                raise RuntimeError(
+                    f"{year}/{state}: downloaded {n} rows ({len(seen)} distinct providers), API reports {expected}"
+                )
             fs.mv(tmp, fs_path)
             print(f"landed {n:>7} rows -> {path}")
 

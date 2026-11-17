@@ -57,12 +57,14 @@ def main() -> int:
 
     cases = [json.loads(line) for line in (HERE / "call_notes.jsonl").read_text().splitlines() if line.strip()]
     totals, correct, failures = defaultdict(int), defaultdict(int), []
+    models: set = set()
     for case in cases:
         try:
             actual = parse(args.api, case["note"])
         except urllib.error.HTTPError as e:
             print(f"API error on {case['id']}: {e.code} {e.read().decode()}", file=sys.stderr)
             return 2
+        models.add(actual.get("model"))
         for field, expected in case["expected"].items():
             totals[field] += 1
             if field_correct(field, expected, actual.get(field)):
@@ -72,6 +74,7 @@ def main() -> int:
 
     report = {
         "cases": len(cases),
+        "models": sorted(m for m in models if m),
         "accuracy": {f: correct[f] / totals[f] for f in totals},
         "scored": dict(totals),
         "failures": failures,

@@ -1,0 +1,29 @@
+{
+  "cases": 30,
+  "accuracy": {
+    "outcome": 1.0,
+    "new_street": 1.0,
+    "new_zip": 1.0,
+    "new_phone": 1.0,
+    "accepting_new_patients": 0.9666666666666667,
+    "new_city": 1.0,
+    "confidence": 1.0
+  },
+  "scored": {
+    "outcome": 30,
+    "new_street": 27,
+    "new_zip": 30,
+    "new_phone": 30,
+    "accepting_new_patients": 30,
+    "new_city": 5,
+    "confidence": 1
+  },
+  "failures": [
+    {
+      "id": "confirmed-03",
+      "field": "accepting_new_patients",
+      "expected": false,
+      "actual": null
+    }
+  ]
+}

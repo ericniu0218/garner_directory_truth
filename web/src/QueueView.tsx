@@ -18,8 +18,9 @@ export function QueueView({ specialties }: { specialties: Specialty[] }) {
         <div className="pane-head">
           <h2>Listings to verify next</h2>
           <p className="hint">
-            Clinicians in the riskiest 30% of listings with no check in the last 180 days, ordered by
-            how many patients a wrong listing would affect.
+            Clinicians in the riskiest 30% of listings that nobody has reached in the last 180 days,
+            ordered by how many patients a wrong listing would affect. An office that could not be
+            reached comes back after 7 days.
           </p>
           <div className="filters">
             <label>

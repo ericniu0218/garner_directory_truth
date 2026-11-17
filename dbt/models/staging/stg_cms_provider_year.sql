@@ -29,3 +29,5 @@ select
     {{ normalize_street('street1') }} || '|' || coalesce(zip5, '') as address_key
 from src
 where npi is not null
+  -- Leakage test hook: rebuild everything as if later years did not exist yet.
+  and data_year <= {{ var('max_data_year', 9999) }}

@@ -14,7 +14,7 @@ export function address(p: Pick<Provider, 'street1' | 'street2' | 'city' | 'stat
 
 export const confidenceLabel: Record<Confidence, string> = {
   verified: 'Verified',
-  corrected: 'Corrected',
+  corrected: 'Address corrected',
   high: 'Likely current',
   medium: 'Check before visiting',
   low: 'May be out of date',

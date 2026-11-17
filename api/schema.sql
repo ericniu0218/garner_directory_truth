@@ -1,4 +1,9 @@
 -- Application tables. dbt owns staging/marts; the scoring job and the API own app.*.
+-- Several API replicas and the scoring job may apply this file at the same
+-- time. "create ... if not exists" can still collide when run concurrently, so
+-- take a transaction-scoped lock first.
+select pg_advisory_xact_lock(7426001);
+
 create schema if not exists app;
 
 -- One row per provider listing in the latest data year, replaced on every scoring run.

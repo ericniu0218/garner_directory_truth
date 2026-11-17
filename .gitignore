@@ -13,3 +13,4 @@ dbt/dbt_packages/
 *.log
 api/directory-truth-api
 .terraform/
+dbt/target_asof*/

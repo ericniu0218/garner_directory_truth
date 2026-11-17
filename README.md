@@ -16,7 +16,7 @@ data.cms.gov API
       |  dlt: land raw files (local disk or S3), then merge into Postgres
       v
 raw.cms_provider_year        658k rows: one per provider per year, 2017-2024
-      |  dbt: address history, practice-level signals, labels, 20 data tests
+      |  dbt: address history, practice-level signals, labels, 14 data tests
       v
 marts.provider_features  ->  model: backtest on later years, score the latest year
       |
@@ -46,7 +46,8 @@ year later the provider's address had changed or the provider no longer appeared
 | Random review | 12.0% | 1.0x |
 
 Reviewing the model's top 10% finds 34% of all stale listings. Predicted chances match what happened:
-the riskiest tenth was predicted at 44% and came in at 41%.
+the riskiest tenth was predicted at 44% and came in at 41%. The result is not carried by one year:
+3.4x on 2022 and 3.5x on 2023.
 
 ### What the numbers do not show
 
@@ -59,11 +60,52 @@ the riskiest tenth was predicted at 44% and came in at 41%.
   practice-level signals (colleagues leaving the same address) did not improve it.
 - **Queue ordering is mostly patient volume.** Ordering by expected patients affected finds 46% of affected
   patients in the first 10% of calls; calling the busiest providers first finds 42%.
+- **Only New York is loaded**, so a provider who moves to another state looks "gone", not "moved".
+- **Recorded checks are not yet used for training.** They are stored as labels and change what members
+  and reviewers see, but the model is still trained only on the CMS proxy label.
+- **No sign-in.** The API has no authentication or rate limiting. Before any real use, the write
+  endpoints and the note parser (each call costs money) would need both.
 - Addresses come from NPPES, a registry providers update themselves, so the "truth" here lags reality.
   With verified call outcomes as labels (what the feedback loop collects) the model could be trained on
   the real target.
 
 All figures are reproduced by `make model` and written to `artifacts/metrics.json`.
+
+## Note parser eval
+
+`make eval` sends 30 hand-written call notes through the real API path and compares each field with
+the expected value (`evals/call_notes.jsonl`, report in `artifacts/parser_eval.json`). First run, default
+model setting, labels unchanged after seeing the result:
+
+| Field | Correct |
+|---|---|
+| outcome | 28/30 (93%) |
+| accepting_new_patients | 29/30 (97%) |
+| new street, ZIP, city, phone | 100% (fields the note leaves out came back empty every time, nothing was invented) |
+
+The notes include a prompt-injection attempt ("ignore previous instructions...") and second-hand
+information; the parser handled both as labeled.
+
+The three misses:
+
+- `confirmed-06`, `tricky-08`: the provider stays in the same building but the suite changed. The
+  parser said "moved"; I had labeled both "confirmed". This is a product-policy question, not clearly a
+  parser error: a changed suite changes where a patient walks in, so recording it as a plain
+  confirmation would show "Verified" next to an out-of-date suite. The labels were my judgment calls.
+- `confirmed-03`: "not accepting new Medicare patients, waitlist only". The parser returned "not stated"
+  and I had labeled "no". The note is about Medicare patients only, so the parser's caution is defensible.
+
+**Policy change made after seeing this result.** I then decided that a suite or floor change in the same
+building counts as "moved", and wrote that rule into the parser prompt (`api/parser.go`). I relabeled
+`confirmed-06` and `tricky-08` as "moved" to match. Because the labels now follow the parser's behavior on
+those two notes, the 93% above is the honest first-run figure and any new score on those two notes is not
+independent evidence. Second run, after the change: outcome 30/30, accepting_new_patients 29/30 (the
+`confirmed-03` Medicare-only note again), everything else unchanged. The 28 notes whose labels did not
+change scored exactly as before, so the new rule did not break them. The 30/30 on outcome is partly by
+construction (I set the rule and the two labels together) and should not be quoted as accuracy.
+
+Limits: 30 notes written by one person (drafted with AI) is a small sample, so 93% could easily be 85%
+or 98% on other notes. The notes are synthetic and tidier than real call notes. Treat it as a smoke test.
 
 ## Run it locally
 
@@ -81,20 +123,28 @@ make test        # Go tests, Python tests, TypeScript check
 
 ## Design decisions
 
-- **No leakage.** Every feature for year *t* uses data from *t* or earlier (dbt window functions only
-  look backward). The backtest trains on earlier years and tests on later ones.
+- **No leakage, and a test that proves it.** Every feature for year *t* uses data from *t* or earlier.
+  `pipeline/tests/test_no_leakage.py` rebuilds the dbt models as if the data ended in 2021 and checks that
+  every feature for 2021 and earlier is identical to the full build. The backtest trains on earlier
+  years and tests on later ones.
 - **History years are not training rows.** With data starting in 2017, "years at this address" cannot
   exceed 1 in 2017. The first two years only build history and tenure is capped at 3, so the feature means
   the same thing in every training row.
+- **Downloads are checked for completeness.** The CMS API pages by offset, which can silently drop or
+  repeat rows. Each landed file must match the row count the API itself reports and contain no repeated
+  provider, or it is discarded.
 - **Safe to re-run.** Landing skips files that exist and writes via a temp file. Loading merges on
   `(npi, data_year)`; a test loads the same file twice and checks the row count. Scores are replaced in one
   transaction.
 - **Address normalization.** "123 Main Street, Suite 4" and "123 MAIN ST STE 4" are the same address;
   a dbt macro normalizes before comparing, so formatting changes do not count as moves.
-- **A person's check outranks the model.** A verification from the last 180 days decides the member-facing
-  label and removes the listing from the queue.
+- **A person's check outranks the model.** A check from the last 180 days that reached the office decides
+  what members see and removes the listing from the queue. "Moved" shows members the corrected address;
+  "no longer practicing" removes the provider from member search. "Could not reach the office" settles
+  nothing, so the listing returns to the queue after 7 days.
 - **Reasons are facts, not model internals.** "Patient volume down 52% vs last year" is something a
-  reviewer can check.
+  reviewer can check. They are rules written by hand, so they describe the listing; they are not an
+  explanation of why the model gave that exact score.
 - **Claude only proposes.** The note parser (`api/parser.go`) turns free-text call notes into form fields
   using a strict tool schema. The reviewer confirms before anything is saved.
 
@@ -102,11 +152,11 @@ make test        # Go tests, Python tests, TypeScript check
 
 | Piece | Status |
 |---|---|
-| Ingestion, dbt (20 tests), backtest, scoring | Run end to end on real data |
-| Go API | Run against real data; unit tests pass |
+| Ingestion, dbt (6 models, 14 data tests), backtest, scoring | Run end to end on real data |
+| Go API | Run against real data; unit tests and a database-backed test of the check outcomes pass |
 | React app | Queue, record-a-check, and results page exercised in a browser |
 | Airflow DAG | Parses on Airflow 3.4 with the expected task order; not yet executed by a scheduler |
-| Claude note parser | Compiles and returns a clear error without a key. **Not yet run against the API**, so `evals/` (30 hand-written notes) has no score yet |
+| Claude note parser | Run against the live API on 30 hand-written notes: outcome 28/30 (93%), see "Note parser eval" below |
 | Dockerfiles, docker-compose, Kubernetes manifests | Written and YAML-valid; **not yet built or applied** |
 | Terraform (S3 bucket) | Written; **not yet applied** |
 | S3 landing | Code path uses fsspec; only local disk has been exercised |

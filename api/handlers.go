@@ -14,9 +14,15 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// A verification younger than this counts as current: the listing leaves the
-// queue and the member view shows the verified result instead of the model score.
+// A check that reached the office (confirmed, moved, closed) counts as current
+// for this long: the listing leaves the queue and the member view shows the
+// checked result instead of the model score.
 const verificationFreshDays = 180
+
+// "Could not reach the office" settles nothing, so the listing stays in the
+// queue. It is only held back this long so the same office is not called twice
+// in a row.
+const unreachableRetryDays = 7
 
 type Server struct {
 	db     *pgxpool.Pool
@@ -61,6 +67,11 @@ type Provider struct {
 	Confidence               string     `json:"confidence"` // verified | corrected | high | medium | low | unscored
 	LastVerifiedAt           *time.Time `json:"last_verified_at"`
 	LastOutcome              *string    `json:"last_outcome"`
+	// Set when the last check found a new address. The member view shows this
+	// instead of the address on file.
+	CorrectedStreet *string `json:"corrected_street"`
+	CorrectedCity   *string `json:"corrected_city"`
+	CorrectedZip    *string `json:"corrected_zip"`
 }
 
 // providerSelect returns one row per current listing joined to its score and
@@ -74,13 +85,14 @@ select
     p.data_year, p.tot_benes, p.tenure_years,
     s.p_stale, s.p_move, s.risk_pct, s.expected_patients_affected,
     coalesce(s.reasons, '[]'::jsonb) as reasons,
-    v.created_at as last_verified_at, v.outcome as last_outcome
+    v.created_at as last_verified_at, v.outcome as last_outcome,
+    v.new_street, v.new_city, v.new_zip
 from marts.provider_current p
 left join app.scores s on s.npi = p.npi
 left join lateral (
-    select created_at, outcome
+    select created_at, outcome, new_street, new_city, new_zip
     from app.verifications
-    where npi = p.npi and created_at > now() - make_interval(days => ` + "$1" + `)
+    where npi = p.npi and outcome <> 'unreachable' and created_at > now() - make_interval(days => ` + "$1" + `)
     order by created_at desc
     limit 1
 ) v on true
@@ -98,6 +110,7 @@ func scanProviders(rows pgx.Rows) ([]Provider, error) {
 			&p.DataYear, &p.MedicarePatients, &p.TenureYears,
 			&p.PStale, &p.PMove, &p.RiskPct, &p.ExpectedPatientsAffected,
 			&reasons, &p.LastVerifiedAt, &p.LastOutcome,
+			&p.CorrectedStreet, &p.CorrectedCity, &p.CorrectedZip,
 		); err != nil {
 			return nil, err
 		}
@@ -171,7 +184,8 @@ func (s *Server) specialties(w http.ResponseWriter, r *http.Request) {
 func (s *Server) searchProviders(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	args := []any{verificationFreshDays}
-	where := []string{"true"}
+	// A provider a reviewer found to be no longer practicing is not offered to members.
+	where := []string{"v.outcome is distinct from 'closed'"}
 	if zip := strings.TrimSpace(q.Get("zip")); zip != "" {
 		args = append(args, zip+"%")
 		where = append(where, "p.zip5 like $"+strconv.Itoa(len(args)))
@@ -203,11 +217,17 @@ func (s *Server) searchProviders(w http.ResponseWriter, r *http.Request) {
 
 // queue is the reviewer view: doubtful listings ranked by expected patients
 // affected (chance the listing is stale x patients who rely on it). Listings
-// with a fresh verification are left out.
+// with a fresh check that reached the office are left out; an unreachable
+// office comes back after a short retry delay.
 func (s *Server) queue(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	args := []any{verificationFreshDays}
-	where := []string{"s.npi is not null", "v.created_at is null"}
+	where := []string{
+		"s.npi is not null",
+		"v.created_at is null",
+		`not exists (select 1 from app.verifications u where u.npi = p.npi and u.outcome = 'unreachable'
+			and u.created_at > now() - make_interval(days => ` + strconv.Itoa(unreachableRetryDays) + `))`,
+	}
 	if sp := q.Get("specialty"); sp != "" {
 		args = append(args, sp)
 		where = append(where, "p.provider_type = $"+strconv.Itoa(len(args)))

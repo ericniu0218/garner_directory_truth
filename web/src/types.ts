@@ -28,6 +28,9 @@ export interface Provider {
   confidence: Confidence
   last_verified_at: string | null
   last_outcome: Outcome | null
+  corrected_street: string | null
+  corrected_city: string | null
+  corrected_zip: string | null
 }
 
 export interface HistoryRow {

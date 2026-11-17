@@ -1,4 +1,9 @@
-# Directory Truth
+# Directory Truth: original plan
+
+> **This is the plan written before the build, kept for the record. The README describes what was built.**
+> Main differences: the served label became "moved or no longer in the billing data" because "moved" alone
+> was only 1.75x better than random; NPPES was not ingested; recorded checks are stored but not yet used
+> for retraining; Docker, Kubernetes and Terraform files exist but have not been run.
 
 > Provider directories are accurate about 27% of the time (Garner's own number). This project estimates which
 > provider listings are probably stale, tells a human which ones to verify first, and shows members how much to

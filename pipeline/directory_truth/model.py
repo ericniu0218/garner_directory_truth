@@ -251,6 +251,16 @@ def backtest(df: pd.DataFrame) -> dict:
         for name, make in (("logistic_regression", make_logistic), ("gradient_boosting", make_boosting)):
             p = make().fit(x_train, train[col].astype(int)).predict_proba(x_test)[:, 1]
             results[name] = ranking_metrics(y_test, p, weight)
+            # Is the result stable, or carried by one test year?
+            results[name]["by_test_year"] = []
+            for year in split.test_years:
+                in_year = (test["data_year"] == year).to_numpy()
+                m = ranking_metrics(y_test[in_year], p[in_year], weight[in_year])
+                top10 = next(c for c in m["capture"] if c["review_fraction"] == 0.10)
+                results[name]["by_test_year"].append(
+                    {"year": int(year), "rows": m["rows"], "base_rate": m["base_rate"], "roc_auc": m["roc_auc"],
+                     "top10_precision": top10["precision"], "top10_lift": top10["lift"]}
+                )
             results[name][f"patients_{ROBUSTNESS_MIN_PATIENTS}_plus"] = {
                 k: v
                 for k, v in ranking_metrics(y_test[robust], p[robust], weight[robust]).items()

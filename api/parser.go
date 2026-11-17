@@ -31,6 +31,9 @@ type ParsedNote struct {
 	AcceptingNewPatients *bool   `json:"accepting_new_patients"`
 	Confidence           string  `json:"confidence"`
 	Evidence             string  `json:"evidence"`
+	// Model is set by the server (not by Claude) so results can be traced to
+	// the model that produced them.
+	Model string `json:"model"`
 }
 
 const parserSystemPrompt = `You help a healthcare directory team record the result of a phone call to a doctor's office.
@@ -38,8 +41,9 @@ const parserSystemPrompt = `You help a healthcare directory team record the resu
 A reviewer called the office to check whether a provider's directory listing is still correct, then typed a short free-text note. Read the note and record the outcome by calling the record_call_outcome tool exactly once.
 
 How to choose the outcome:
-- confirmed: the office said the provider still practices at the listed address.
-- moved: the provider now practices at a different address. Fill in whatever parts of the new address or phone the note gives.
+- confirmed: the office said the provider still practices at the listed address, with no change to the suite or floor.
+- moved: the provider now practices at a different address. This includes a different suite or floor in the same building, because patients use the suite to find the office. Fill in whatever parts of the new address or phone the note gives; for a suite change, record only the part the note states.
+- A move that has not happened yet (for example "moving next month") is still confirmed, because the listed address is correct today.
 - closed: the provider retired, died, left medicine, or the practice shut down, with no new location.
 - unreachable: nobody gave an answer (no pickup, voicemail, disconnected number, or the person did not know).
 
@@ -112,6 +116,7 @@ func (p *NoteParser) Parse(ctx context.Context, note string) (*ParsedNote, error
 			if err := json.Unmarshal(use.Input, &parsed); err != nil {
 				return nil, fmt.Errorf("decode tool input: %w", err)
 			}
+			parsed.Model = p.model
 			return &parsed, nil
 		}
 	}

@@ -57,7 +57,14 @@ export function SearchView({ specialties }: { specialties: Specialty[] }) {
                 <strong>{p.name}</strong>
                 {p.credentials && <span className="muted"> {p.credentials}</span>}
                 <div className="muted">{p.specialty}</div>
-                <div>{address(p)}</div>
+                {p.last_outcome === 'moved' && p.corrected_street ? (
+                  <>
+                    <div>{[p.corrected_street, p.corrected_city, p.corrected_zip].filter(Boolean).join(', ')}</div>
+                    <div className="muted small">Previously listed at {address(p)}</div>
+                  </>
+                ) : (
+                  <div>{address(p)}</div>
+                )}
               </div>
               <div className="card-side">
                 <Badge confidence={p.confidence} />
